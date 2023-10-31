@@ -16,6 +16,8 @@ type Enum = Vec<String>;
 
 type Array = HashMap<String, String>;
 
+pub type DynError = Box<dyn std::error::Error>;
+
 #[derive(serde::Deserialize, Debug)] pub struct PropertyFormat(pub Format);
 
 #[derive(serde::Deserialize, Debug)] pub struct PropertyTypeName(pub Name);

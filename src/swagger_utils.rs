@@ -1,16 +1,8 @@
 use crate::models;
 use crate::types;
 
-pub async fn get_definition(request_url: &str) -> Result<types::Schemas, String> {
-    let response = reqwest::get(request_url).await;
-    match response {
-        Err(value) => Err(value.to_string()),
-        Ok(value) => {
-            let deserialized = value.json::<models::ApiDoc>().await;
-            match deserialized {
-                Err(value) => Err(value.to_string()),
-                Ok(value) => Ok(value.components.schemas)
-            }
-        }
-    }
+pub async fn get_definition(request_url: &str) -> Result<types::Schemas, types::DynError> {
+    let response = reqwest::get(request_url).await?;
+    let deserialized = response.json::<models::ApiDoc>().await?;
+    Ok(deserialized.components.schemas)
 }

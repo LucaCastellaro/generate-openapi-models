@@ -13,7 +13,10 @@ impl models::ApiDocProperty {
 
     fn get_property_type_from_ref(&self) -> String {
         match self.type_ref.as_ref() {
-            Some(type_ref) => type_ref.0.split("/").last().unwrap().to_string(),
+            Some(type_ref) => match type_ref.0.split("/").last() {
+                Some(type_ref) => type_ref.to_string(),
+                None => "object".to_string()
+            },
             None => "object".to_string()
         }
     }
