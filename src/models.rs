@@ -1,27 +1,24 @@
-use std::collections::HashMap;
+use crate::types;
 
 #[derive(serde::Deserialize, Debug)]
 pub struct ApiDocComponents {
-    pub schemas: Schemas
+    pub schemas: types::Schemas
 }
-
-pub type Schemas = HashMap<String, ApiDocSchema>;
 
 #[derive(serde::Deserialize, Debug)]
 pub struct ApiDocSchema {
-    pub r#type: Option<String>,
-    pub properties: Option<Properties>
+    #[serde(rename(deserialize = "type"))] pub type_name: Option<String>,
+    pub properties: Option<types::Properties>
 }
-
-pub type Properties = HashMap<String, ApiDocProperty>; 
 
 #[derive(serde::Deserialize, Debug)]
 pub struct ApiDocProperty {
-    #[serde(rename(deserialize = "type"))] pub type_name: Option<String>,
-    pub format: Option<String>,
-    #[serde(rename(deserialize = "$ref"))] pub type_ref: Option<String>,
-    pub items: Option<HashMap<String, String>>,
-    pub r#enum: Option<Vec<String>>
+    #[serde(rename(deserialize = "type"))] pub type_name: Option<types::PropertyTypeName>,
+    #[serde(rename(deserialize = "$ref"))] pub type_ref: Option<types::PropertyTypeRef>,
+    #[serde(rename(deserialize = "enum"))] pub enum_definition: Option<types::PropertyEnum>,
+    #[serde(rename(deserialize = "format"))] pub type_format: Option<types::PropertyFormat>,
+
+    pub items: Option<types::PropertyArray>
 }
 
 #[derive(serde::Deserialize, Debug)]
