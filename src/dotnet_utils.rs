@@ -27,6 +27,10 @@ pub async fn create_record(object_name: &String, properties: &types::Properties,
     for (property_name, property) in properties {
         let camel_case_property_name = property_name.to_case(Case::UpperCamel);
 
+        let camel_case_property_name = if camel_case_property_name == *object_name 
+            { format!("{camel_case_property_name}_Prop") } 
+            else { camel_case_property_name };
+
         let message = format!("Adding property {camel_case_property_name} - json name = {property_name}");
         loader.set_message(message);
 
@@ -76,7 +80,10 @@ pub fn create_enum(name: &String, keys: Vec<String>, output_path: &str) {
     lines.push(format!("\npublic enum {} {{", name));
     // enum keys
     for key in keys {
-        lines.push(format!("\t{key},"));
+        let key_to_add = if key == *name 
+            { format!("{key}_key") } 
+            else { key };
+        lines.push(format!("\t{key_to_add},"));
     }
 
     // close enum
