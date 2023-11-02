@@ -57,7 +57,7 @@ impl models::ApiDocProperty {
             Err(property_type) => {
                 match property_type.as_str() {
                     "string" => self.handle_string_property_type(property_type, property_name, output_path),
-                    "array" => self.handle_array_property_type(property_name, output_path),
+                    "array" => format!("List<{}>", self.handle_array_property_type(property_name, output_path)),
                     &_ => "object".to_string()
                 }
             },
@@ -71,7 +71,7 @@ impl models::ApiDocProperty {
                 match r#ref {
                     Some(value) => {
                         let type_from_ref = value.0.as_str().split("/").last().unwrap();
-                        Ok(format!("{type_from_ref}[]"))
+                        Ok(type_from_ref.to_string())
                     },
                     None => {
                         let r#type = items.get_type_name();

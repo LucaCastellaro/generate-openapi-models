@@ -74,10 +74,9 @@ pub fn create_enum(name: &String, keys: Vec<String>, output_path: &str) {
 
     // open enum
     lines.push(format!("\npublic enum {} {{", name));
-
     // enum keys
     for key in keys {
-        lines.push(format!("\t{key}"));
+        lines.push(format!("\t{key},"));
     }
 
     // close enum
