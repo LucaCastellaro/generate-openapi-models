@@ -10,27 +10,48 @@ mod types;
 mod dotnet_utils;
 mod structs_implementations;
 mod struct_utils;
+mod constants;
+mod command_line_args_utils;
 
 #[tokio::main]
 async fn main() -> Result<(), types::DynError> {
-    let output_path = get_output_path()?;
-    let swagger_url = get_swagger_url()?;
+    let args: Vec<String> = command_line_args_utils::get_command_line_args();
+
+    if command_line_args_utils::user_asked_help(&args)
+    {
+        command_line_args_utils::print_help_menu();
+        return Ok(());
+    }
+
+    let output_path = get_output_path(&args)?;
+    let swagger_url = get_swagger_url(&args)?;
     let definition = download_swagger_definition(swagger_url.as_str()).await?;
     io_utils::response(io_utils::Response::Valid, &io_utils::Payload::Str::<&String>(&"Swagger definition is valid".to_string()));
     create_models_from_schema(definition, &output_path).await;
     Ok(())
 }
 
-fn get_output_path() -> Result<PathBuf, types::DynError> {
-    let output_path = io_utils::text("Destination path")?;
+fn get_output_path(args: &Vec<String>) -> Result<PathBuf, types::DynError> {
+    let output_path = command_line_args_utils::get_destination_path(&args);
+
+    let output_path = match output_path {
+        None => io_utils::text("Destination path")?,
+        Some(output_path) => output_path
+    };
 
     let output_path = path_utils::is_path_valid(output_path.as_str())?;
     io_utils::response(io_utils::Response::Valid, &io_utils::Payload::Obj(&output_path));
     Ok(output_path)
 }
 
-fn get_swagger_url() -> Result<String, types::DynError> {
-    let swagger_url = io_utils::text("Swagger definition url")?;
+fn get_swagger_url(args: &Vec<String>) -> Result<String, types::DynError> {
+    let swagger_url = command_line_args_utils::get_open_api_url(&args);
+
+    let swagger_url = match swagger_url {
+        None => io_utils::text("Swagger definition url")?,
+        Some(swagger_url) => swagger_url
+    };
+
     io_utils::response(io_utils::Response::Valid, &io_utils::Payload::Str::<&String>(&swagger_url));
     Ok(swagger_url)
 }
